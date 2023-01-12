@@ -1,0 +1,82 @@
+--Creamos las 3 tablas principales que seria CLIENTES, VEHICULO Y TRANSPORTISTA
+
+create table CLIENTE (id_cliente VARCHAR (10) not null primary key,
+cedula varchar(10),nombres varchar(20), apellidos varchar(20), celular integer, 
+correo_electronico varchar(50),direccion varchar(50), cuidad varchar(20), provincia varchar(20));
+
+create table TRANSPORTISTA (id_transportista varchar (10) not null primary key, 
+tipo_licencia varchar (20), cedula varchar(10), nombre_transportista varchar(20), 
+apellido_transportista varchar(20), correo_electronico_transportista varchar(50), celular_transportista integer);
+
+create table VEHICULO (id_vehiculo varchar (10) not null primary key,
+id_cliente VARCHAR (10)references CLIENTE (id_cliente),
+id_transportista varchar (10)references TRANSPORTISTA (id_transportista),
+placa integer, capacidad_persona varchar(20), distancia_recorrida varchar(10),
+estado varchar(30), cantidad_viaje integer);
+
+
+-- INSERTAMOS LOS DATOS
+
+alter table VEHICULO ADD CHECK (cantidad_viaje<6);
+
+insert into CLIENTE (id_cliente,cedula,nombres,apellidos,celular,correo_electronico,direccion,cuidad,provincia) values
+('1','1351213141','karla','medranda',0992787403,'karlam@gmail.com','calle 13 Av 2','manta','tarqui'),
+('2','1351314151','sara','macias',0992787402,'saram@gmail.com','calle 15 Av 2','manta','eloy alfaro'),
+('3','1351415161','noelia','cedeño',0992787401,'noeliac@gmail.com','calle 16 Av 2','manta','los esteros')
+
+insert into TRANSPORTISTA (id_transportista,tipo_licencia,cedula,nombre_transportista,apellido_transportista,correo_electronico_transportista,celular_transportista) values 
+('10','tipo a','1351787917','mario','anchundia','marioagmail.com',0997894512 ),
+('11','tipo b','1351787918','carlos','perez','calosp@gmail.com',0997894510),
+('12','tipo a','1351787919','pedro','cedeño','pedroc@gmail.com',0997894511)
+
+
+insert into VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_persona,distancia_recorrida,estado,cantidad_viaje ) VALUES 
+('20','1','10',2000,'2 personas','1000 km','disponible',5),
+('21','2','11',2001,'1 persona','150 km','ocupado',3),
+('22','3','12',2002,'4 personas','1500 km','disponible',2)
+
+
+--CREAMOS EL PROCEDIMIENTO ALMACENADO
+
+CREATE PROCEDURE insertar_vehiculo (
+    IN p_id_vehiculo VARCHAR(10),
+    IN p_id_cliente VARCHAR(10),
+    IN p_id_transportista VARCHAR(10),
+    IN p_placa INTEGER,
+    IN p_capacidad_persona varchar(20),
+	IN p_distancia_recorrida VARCHAR(10),
+	IN p_estado VARCHAR(30),
+	IN p_cantidad_viaje INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_persona,distancia_recorrida,estado,cantidad_viaje)
+    VALUES (p_id_vehiculo,p_id_cliente,p_id_transportista,p_placa,p_capacidad_persona,p_distancia_recorrida,p_estado,p_cantidad_viaje);
+
+    IF p_estado = 'ocupado' THEN
+        UPDATE VEHICULO
+        SET p_cantidad_viaje = p_cantidad_viaje + 1
+        WHERE id_vehiculo = id_vehiculo;
+
+        UPDATE VEHICULO
+        SET p_cantidad_viaje = p_cantidad_viaje + 1
+        WHERE id_vehiculo = id_vehiculo;
+    ELSIF p_estado = 'disponible' THEN
+        UPDATE VEHICULO
+        SET p_cantidad_viaje = p_cantidad_viaje + 1
+        WHERE id_vehiculo = id_vehiculo;
+    END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN 
+        ROLLBACK;
+        RAISE EXCEPTION 'No se pudo ejecutar la transacción';
+END;
+$$;
+
+
+--Y HACEMOS UN SELECT PARA QUE NOS MUETRE POR PANTALLA CADA TABLA
+select * from CLIENTE;
+select * from TRANSPORTISTA;
+select * from VEHICULO;
