@@ -6,7 +6,7 @@ correo_electronico varchar(50),direccion varchar(50), cuidad varchar(20), provin
 
 create table TRANSPORTISTA (id_transportista varchar (10) not null primary key, 
 tipo_licencia varchar (20), cedula varchar(10), nombre_transportista varchar(20), 
-apellido_transportista varchar(20), correo_electronico_transportista varchar(50), celular_transportista integer);
+apellido_transportista varchar(20), correo_electronico_transportista varchar(50), celular_transportista integer,estado_transportista varchar(30));
 
 create table VEHICULO (id_vehiculo varchar (10) not null primary key,
 id_cliente VARCHAR (10)references CLIENTE (id_cliente),
@@ -24,10 +24,10 @@ insert into CLIENTE (id_cliente,cedula,nombres,apellidos,celular,correo_electron
 ('2','1351314151','sara','macias',0992787402,'saram@gmail.com','calle 15 Av 2','manta','eloy alfaro'),
 ('3','1351415161','noelia','cedeño',0992787401,'noeliac@gmail.com','calle 16 Av 2','manta','los esteros');
 
-insert into TRANSPORTISTA (id_transportista,tipo_licencia,cedula,nombre_transportista,apellido_transportista,correo_electronico_transportista,celular_transportista) values 
-('10','tipo a','1351787917','mario','anchundia','marioagmail.com',0997894512 ),
-('11','tipo b','1351787918','carlos','perez','calosp@gmail.com',0997894510),
-('12','tipo a','1351787919','pedro','cedeño','pedroc@gmail.com',0997894511);
+insert into TRANSPORTISTA (id_transportista,tipo_licencia,cedula,nombre_transportista,apellido_transportista,correo_electronico_transportista,celular_transportista,estado_transportista) values 
+('10','tipo a','1351787917','mario','anchundia','marioagmail.com',0997894512,'disponible' ),
+('11','tipo b','1351787918','carlos','perez','calosp@gmail.com',0997894510,'ocupado'),
+('12','tipo a','1351787919','pedro','cedeño','pedroc@gmail.com',0997894511,'disponible')
 
 
 insert into VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_persona,distancia_recorrida,estado,cantidad_viaje ) VALUES 
@@ -38,33 +38,29 @@ insert into VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_pe
 
 --CREAMOS EL PROCEDIMIENTO ALMACENADO
 
-CREATE PROCEDURE insertar_vehiculo (
-    IN p_id_vehiculo VARCHAR(10),
-    IN p_id_cliente VARCHAR(10),
+CREATE PROCEDURE insertar_transportista (
     IN p_id_transportista VARCHAR(10),
-    IN p_placa INTEGER,
-    IN p_capacidad_persona varchar(20),
-	IN p_distancia_recorrida VARCHAR(10),
-	IN p_estado VARCHAR(30),
-	IN p_cantidad_viaje INTEGER
+    IN p_tipo_licencia varchar (20),
+    IN p_cedula varchar(10),
+	IN p_nombre_transportista VARCHAR(20),
+	IN p_apellido_transportista VARCHAR(20),
+	IN p_correo_electronico_transportista VARCHAR(50),
+	IN p_celular_transportista INTEGER,
+	IN p_estado_transportista VARCHAR(30)
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_persona,distancia_recorrida,estado,cantidad_viaje)
-    VALUES (p_id_vehiculo,p_id_cliente,p_id_transportista,p_placa,p_capacidad_persona,p_distancia_recorrida,p_estado,p_cantidad_viaje);
+    INSERT INTO TRANSPORTISTA (id_transportista,tipo_licencia,cedula,nombre_transportista,apellido_transportista,correo_electronico_transportista,celular_transportista,estado_transportista)
+    VALUES (p_id_transportista,p_tipo_licencia,p_cedula,p_nombre_transportista,p_apellido_transportista,p_correo_electronico_transportista,p_celular_transportista,p_estado_transportista);
 
-    IF p_estado = 'ocupado' THEN
+    IF p_estado_transportista = 'ocupado' THEN
         UPDATE VEHICULO
-        SET p_cantidad_viaje = p_cantidad_viaje + 1
+        SET cantidad_viaje = cantidad_viaje + 1
         WHERE id_vehiculo = id_vehiculo;
-
+    ELSIF p_estado_transportista = 'disponible' THEN
         UPDATE VEHICULO
-        SET p_cantidad_viaje = p_cantidad_viaje + 1
-        WHERE id_vehiculo = id_vehiculo;
-    ELSIF p_estado = 'disponible' THEN
-        UPDATE VEHICULO
-        SET p_cantidad_viaje = p_cantidad_viaje + 1
+        SET cantidad_viaje = cantidad_viaje + 1
         WHERE id_vehiculo = id_vehiculo;
     END IF;
 
@@ -74,7 +70,6 @@ EXCEPTION
         RAISE EXCEPTION 'No se pudo ejecutar la transacción';
 END;
 $$;
-
 
 --Y HACEMOS UN SELECT PARA QUE NOS MUETRE POR PANTALLA CADA TABLA
 select * from CLIENTE;
