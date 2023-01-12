@@ -22,12 +22,12 @@ alter table VEHICULO ADD CHECK (cantidad_viaje<6);
 insert into CLIENTE (id_cliente,cedula,nombres,apellidos,celular,correo_electronico,direccion,cuidad,provincia) values
 ('1','1351213141','karla','medranda',0992787403,'karlam@gmail.com','calle 13 Av 2','manta','tarqui'),
 ('2','1351314151','sara','macias',0992787402,'saram@gmail.com','calle 15 Av 2','manta','eloy alfaro'),
-('3','1351415161','noelia','cedeño',0992787401,'noeliac@gmail.com','calle 16 Av 2','manta','los esteros')
+('3','1351415161','noelia','cedeño',0992787401,'noeliac@gmail.com','calle 16 Av 2','manta','los esteros');
 
 insert into TRANSPORTISTA (id_transportista,tipo_licencia,cedula,nombre_transportista,apellido_transportista,correo_electronico_transportista,celular_transportista) values 
 ('10','tipo a','1351787917','mario','anchundia','marioagmail.com',0997894512 ),
 ('11','tipo b','1351787918','carlos','perez','calosp@gmail.com',0997894510),
-('12','tipo a','1351787919','pedro','cedeño','pedroc@gmail.com',0997894511)
+('12','tipo a','1351787919','pedro','cedeño','pedroc@gmail.com',0997894511);
 
 
 insert into VEHICULO (id_vehiculo,id_cliente,id_transportista,placa,capacidad_persona,distancia_recorrida,estado,cantidad_viaje ) VALUES 
